@@ -1,0 +1,6 @@
+# Optional: Health check endpoint
+location /health {
+    access_log off;
+    return 200 "healthy\n";
+    add_header Content-Type text/plain;
+}

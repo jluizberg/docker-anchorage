@@ -1,0 +1,2 @@
+ssl_certificate $NGINX_CERTS_DIR/$LETSENCRYPT_CERT_FILE;
+ssl_certificate_key $NGINX_CERTS_DIR/$LETSENCRYPT_CERT_KEY;

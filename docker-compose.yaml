@@ -1,0 +1,49 @@
+services:
+  nginx:
+    image: nginx:1.26-alpine
+    container_name: nginx-gateway
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ${NGINX_DATA_DIR}/nginx.conf:${NGINX_BASE_DIR}/nginx.conf:ro
+      - ${NGINX_DATA_DIR}/conf.d:${NGINX_BASE_DIR}/conf.d:ro
+      - ${GLOBAL_JBDESIGN_CERTS_DIR}:${NGINX_CERTS_DIR}:ro
+      - ${NGINX_DATA_DIR}/logs:/var/log/nginx
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+
+  proget:
+    image: proget.inedo.com/productimages/inedo/proget:latest
+    container_name: proget
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ${PROGET_DATA_DIR}/packages:/var/proget/packages
+      - ${PROGET_DATA_DIR}/database:/var/proget/database
+      - ${PROGET_DATA_DIR}/backups:/var/proget/backups
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+
+  rancher:
+    image: rancher/rancher:latest
+    container_name: ${RANCHER_CONTAINER_NAME}
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "3443:443"
+    volumes:
+      - ${RANCHER_DATA_DIR}:/var/lib/rancher
+      - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_FILE}:/etc/rancher/ssl/cert.pem
+      - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_KEY}:/etc/rancher/ssl/key.pem
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+    environment:
+      - CATTLE_AGENT_TLS_MODE=system-store
+    command: 
+      - "--no-cacerts"
+
+networks:
+  ${GLOBAL_BRIDGED_NETWORK}:
+    name: ${GLOBAL_BRIDGED_NETWORK}
+    driver: bridge
