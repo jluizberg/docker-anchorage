@@ -82,6 +82,19 @@ services:
     depends_on:
       - postgres
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: ${QDRANT_CONTAINER_NAME}
+    restart: unless-stopped
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=${QDRANT_GRPC_PORT}
+      - QDRANT__API_KEY=${QDRANT_API_KEY}
+    volumes:
+      - ${QDRANT_DATA_DIR}:/qdrant/storage
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+
 networks:
   ${GLOBAL_BRIDGED_NETWORK}:
     name: ${GLOBAL_BRIDGED_NETWORK}

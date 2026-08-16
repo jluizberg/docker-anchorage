@@ -60,6 +60,7 @@ mkdir -p ${PROGET_DATA_DIR}/database
 mkdir -p ${PROGET_DATA_DIR}/backups
 mkdir -p ${POSTGRES_DATA_DIR}
 mkdir -p ${KEYCLOAK_DATA_DIR}
+mkdir -p ${QDRANT_DATA_DIR}
 
 envsubst < ./docker-compose.yaml > /tmp/docker-compose.yaml
 
