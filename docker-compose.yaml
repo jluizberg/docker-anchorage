@@ -1,7 +1,7 @@
 services:
   nginx:
     image: nginx:1.26-alpine
-    container_name: nginx-gateway
+    container_name: nginx
     restart: unless-stopped
     ports:
       - "443:443"
@@ -24,24 +24,28 @@ services:
       - ${PROGET_DATA_DIR}/backups:/var/proget/backups
     networks:
       - ${GLOBAL_BRIDGED_NETWORK}
+    depends_on:
+      - nginx
 
-  rancher:
-    image: rancher/rancher:latest
-    container_name: ${RANCHER_CONTAINER_NAME}
-    restart: unless-stopped
-    privileged: true
-    ports:
-      - "3443:443"
-    volumes:
-      - ${RANCHER_DATA_DIR}:/var/lib/rancher
-      - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_FILE}:/etc/rancher/ssl/cert.pem
-      - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_KEY}:/etc/rancher/ssl/key.pem
-    networks:
-      - ${GLOBAL_BRIDGED_NETWORK}
-    environment:
-      - CATTLE_AGENT_TLS_MODE=system-store
-    command: 
-      - "--no-cacerts"
+  # rancher:
+  #   image: rancher/rancher:latest
+  #   container_name: ${RANCHER_CONTAINER_NAME}
+  #   restart: unless-stopped
+  #   privileged: true
+  #   ports:
+  #     - "3443:443"
+  #   volumes:
+  #     - ${RANCHER_DATA_DIR}:/var/lib/rancher
+  #     - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_FILE}:/etc/rancher/ssl/cert.pem
+  #     - ${GLOBAL_JBDESIGN_CERTS_DIR}/${LETSENCRYPT_CERT_KEY}:/etc/rancher/ssl/key.pem
+  #   networks:
+  #     - ${GLOBAL_BRIDGED_NETWORK}
+  #   environment:
+  #     - CATTLE_AGENT_TLS_MODE=system-store
+  #   command: 
+  #     - "--no-cacerts"
+  #   depends_on:
+  #     - nginx
 
   postgres:
     image: postgres:16-alpine
@@ -80,6 +84,7 @@ services:
     networks:
       - ${GLOBAL_BRIDGED_NETWORK}
     depends_on:
+      - nginx
       - postgres
 
   qdrant:
@@ -94,8 +99,41 @@ services:
       - ${QDRANT_DATA_DIR}:/qdrant/storage
     networks:
       - ${GLOBAL_BRIDGED_NETWORK}
+    depends_on:
+      - nginx
+
+  # websearch:
+  #   image: proget.intra.jbdesign.com.br/containers/web-search:latest
+  #   container_name: ${WEBSEARCH_CONTAINER_NAME}
+  #   restart: unless-stopped
+  #   ports:
+  #     - "4000:4000"
+  #     - "3001:3001"
+  #   volumes:
+  #     - ${WEBSEARCH_DATA_DIR}/config.json:/app/config.json:ro
+  #   networks:
+  #     - ${GLOBAL_BRIDGED_NETWORK}
+  #   depends_on:
+  #     - nginx
+  #     - postgres
+  #     - qdrant
+
+  translator:
+    image: ${TRANSLATOR_IMAGE}
+    container_name: ${TRANSLATOR_CONTAINER_NAME}
+    restart: unless-stopped
+    environment:
+      - LT_LOAD_ONLY=en,pt,es,zh,ru,de
+      - TRANSLATOR_API_KEY=${TRANSLATOR_API_KEY}
+    volumes:
+      - ${TRANSLATOR_DATA_DIR}:/app/data
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+    depends_on:
+      - nginx
 
 networks:
-  ${GLOBAL_BRIDGED_NETWORK}:
+  internal:
     name: ${GLOBAL_BRIDGED_NETWORK}
     driver: bridge
+    external: true
