@@ -123,7 +123,7 @@ services:
     container_name: ${TRANSLATOR_CONTAINER_NAME}
     restart: unless-stopped
     environment:
-      - LT_LOAD_ONLY=en,pt,es,zh,ru,de
+      - LT_LOAD_ONLY=en,pt,es,zh,ru,de,fr,it
       - TRANSLATOR_API_KEY=${TRANSLATOR_API_KEY}
     volumes:
       - ${TRANSLATOR_DATA_DIR}:/app/data
