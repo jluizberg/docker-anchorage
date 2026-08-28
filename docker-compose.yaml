@@ -122,8 +122,14 @@ services:
     image: ${TRANSLATOR_IMAGE}
     container_name: ${TRANSLATOR_CONTAINER_NAME}
     restart: unless-stopped
+    # Resource caps keep LibreTranslate from consuming the whole dev box without
+    # overriding its default command (which is required for translations to work).
+    mem_limit: 8g
+    cpus: 4
     environment:
-      - LT_LOAD_ONLY=en,pt,es,zh,ru,de,fr,it
+      # Only the most common content languages are pre-loaded; other models are
+      # fetched on demand, keeping the resident model set (and memory) small.
+      - LT_LOAD_ONLY=en,pt,es,fr,it,de,ru
       - TRANSLATOR_API_KEY=${TRANSLATOR_API_KEY}
     volumes:
       - ${TRANSLATOR_DATA_DIR}:/app/data
