@@ -25,6 +25,7 @@ mkdir -p ${KEYCLOAK_DATA_DIR}
 mkdir -p ${QDRANT_DATA_DIR}
 # mkdir -p ${WEBSEARCH_DATA_DIR}
 mkdir -p ${TRANSLATOR_DATA_DIR}
+mkdir -p ${NEO4J_DATA_DIR}
 
 chown -R 1000:1000 ${KEYCLOAK_DATA_DIR}
 chmod 755 ${KEYCLOAK_DATA_DIR}

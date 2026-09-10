@@ -138,6 +138,25 @@ services:
     depends_on:
       - nginx
 
+  neo4j:
+    image: neo4j:community
+    container_name: ${NEO4J_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+    volumes:
+      - ${NEO4J_DATA_DIR}/data:/data
+      - ${NEO4J_DATA_DIR}/logs:/logs
+      - ${NEO4J_DATA_DIR}/import:/import
+      - ${NEO4J_DATA_DIR}/plugins:/plugins
+    networks:
+      - ${GLOBAL_BRIDGED_NETWORK}
+    depends_on:
+      - nginx
+
 networks:
   internal:
     name: ${GLOBAL_BRIDGED_NETWORK}

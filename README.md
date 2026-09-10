@@ -10,6 +10,7 @@ Docker Compose setup for local development services with centralized nginx gatew
 - **postgres**: PostgreSQL 16 database server on port 5432
 - **keycloak**: Identity and access management (IdP) at `idp.intra.jbdesign.com.br`
 - **qdrant**: Vector database at `qdrant.intra.jbdesign.com.br`
+- **neo4j**: Neo4j Community graph database at `neo4j.intra.jbdesign.com.br` (HTTP/API on 7474, Bolt on 7687)
 
 ## SSL Certificates
 
@@ -54,4 +55,5 @@ All persistent data is stored under `/data/`:
 - `/data/postgres/` - PostgreSQL database files
 - `/data/keycloak/` - Keycloak data
 - `/data/qdrant/` - Qdrant vector database storage
+- `/data/neo4j/` - Neo4j data, logs, imports, and plugins
 - `/data/ssl/` - Let's Encrypt certificates
